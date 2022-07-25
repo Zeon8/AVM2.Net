@@ -1,0 +1,3 @@
+-p src
+--main Main
+--swf bin/Project.swf

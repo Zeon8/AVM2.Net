@@ -1,0 +1,8 @@
+-p src/
+ClassTests
+ObjectsTests
+ExpressionsTests
+IfElseTests
+NativeCallTests
+NativeSuperCallTests 
+--swf bin/HaxeTests.swf
