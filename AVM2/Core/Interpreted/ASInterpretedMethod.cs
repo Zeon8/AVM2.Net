@@ -10,7 +10,7 @@ public class ASInterpretedMethod : IASMethod
 
     public bool IsStatic => throw new NotImplementedException();
 
-    private readonly ASMethod _method;
+    private ASMethod _method;
     private readonly ASRuntime _runtime;
 
     public ASInterpretedMethod(ASMethod method, ASRuntime runtime)
@@ -29,6 +29,8 @@ public class ASInterpretedMethod : IASMethod
         var asCode = new ASCode(_method.ABC, body);
         return Execute(asCode,machine);
     }
+
+    internal void ReplaceASMethod(ASMethod method) => _method = method;
 
     internal static object Execute(ASCode asCode, ASMachine machine, int startIndex = 0)
     {

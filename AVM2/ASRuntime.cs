@@ -32,6 +32,25 @@ public class ASRuntime
             @class.CallInitializer();
     }
 
+    public void HotReload(byte[] abcData)
+    {
+        var file = new ABCFile(abcData);
+        foreach (var klass in file.Classes)
+        {
+            if (GetClass(klass.QName) is ASInterpretedClass interpretedClass)
+            {
+                foreach (var method in klass.GetMethods())
+                {
+                    if (interpretedClass.GetMethod(method.Trait.QName.Name) is ASInterpretedMethod interpretedMethod)
+                    {
+                        interpretedMethod.ReplaceASMethod(method);
+                    }
+                }
+            }
+        }
+
+    }
+
     public void RegisterType(Type type,string @namespace = "")
     {
         var klass = _classes.FirstOrDefault(klass => klass.Namespace == @namespace && klass.Name == type.Name);

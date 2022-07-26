@@ -242,3 +242,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /Flazzy.Sandbox/Properties/launchSettings.json
+
+# Console test projects
+AVM2.Test/
