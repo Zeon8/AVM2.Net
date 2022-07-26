@@ -5,4 +5,4 @@ ExpressionsTests
 IfElseTests
 NativeCallTests
 NativeSuperCallTests 
---swf bin/HaxeTests.swf
+--swf bin/HaxeProject.swf
