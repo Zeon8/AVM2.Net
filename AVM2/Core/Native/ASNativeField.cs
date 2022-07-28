@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace AVM2.Core.Native;
 
-public class ASNativeField : IASProperty
+internal class ASNativeField : IASProperty
 {
     private FieldInfo _fieldInfo;
 

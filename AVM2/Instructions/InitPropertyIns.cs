@@ -1,4 +1,5 @@
-﻿using AVM2.Core;
+﻿using AVM2;
+using AVM2.Core;
 using Flazzy.IO;
 
 namespace Flazzy.ABC.AVM2.Instructions

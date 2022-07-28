@@ -30,14 +30,11 @@ public class ASInterpretedMethod : IASMethod
         return Execute(asCode,machine);
     }
 
-    internal void ReplaceASMethod(ASMethod method) => _method = method;
-
-    internal static object Execute(ASCode asCode, ASMachine machine, int startIndex = 0)
+    private object Execute(ASCode asCode, ASMachine machine)
     {
         ASInstruction jumperExit = null;
-        for (int i = startIndex; i < asCode.Count; i++)
+        foreach (ASInstruction instruction in asCode)
         {
-            ASInstruction instruction = asCode[i];
             if (jumperExit is not null && instruction != jumperExit)
                 continue;
             jumperExit = null;
@@ -65,4 +62,6 @@ public class ASInterpretedMethod : IASMethod
         for (int i = 0; i < args.Length; i++)
             machine.Registers[i + 1] = args[i];
     }
+
+    internal void ReplaceASMethod(ASMethod method) => _method = method;
 }

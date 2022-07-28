@@ -51,8 +51,15 @@ namespace Flazzy.ABC
         public ASNamespace Namespace => Pool.Namespaces[NamespaceIndex];
 
         public int NamespaceSetIndex { get; set; }
-        public ASNamespaceSet NamespaceSet => Pool.NamespaceSets[NamespaceSetIndex];
-
+        public ASNamespaceSet NamespaceSet
+        {
+            get
+            {
+                if(NamespaceSetIndex < Pool.NamespaceSets.Capacity)
+                    return Pool.NamespaceSets[NamespaceSetIndex];
+                return null;
+            }
+        }
         public List<int> TypeIndices { get; }
         protected override string DebuggerDisplay => $"{Kind}: \"{Namespace.Name}.{Name}\"";
 

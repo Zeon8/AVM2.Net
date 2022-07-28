@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using AVM2.Core;
 using AVM2.Core.Interpreted;
 using AVM2.Core.Native;
@@ -8,13 +9,24 @@ namespace AVM2;
 public class ASRuntime
 {
     private readonly List<ASBaseClass> _classes = new();
-    public ASBaseClass GetClass(string name, string namepsace = "") => _classes.FirstOrDefault(klass => klass.Name == name && klass.Namespace == namepsace);
-    private const string IgnoredNamespace = "flash";
 
-    public ASBaseClass GetClass(ASMultiname name)
+    public ASBaseClass[] Classes => _classes.ToArray();
+
+    public ASRuntime()
+    {
+        RegisterType(typeof(ASObject), new QName("Object",""));
+        RegisterType(typeof(ASObject), new QName("Error",""));
+        RegisterType(typeof(ASObject), new QName("Boot","flash"));
+    }
+
+    public ASBaseClass GetClass(string name, string @namespace = "") => GetClass(new QName(name, @namespace));
+
+    public ASBaseClass GetClass(QName qName) => _classes.FirstOrDefault(klass => klass.QName == qName);
+
+    internal ASBaseClass GetClass(ASMultiname name)
     {
         foreach (var klass in _classes)
-            if(klass.Name == name.Name && klass.Namespace == name.Namespace.Name)
+            if(klass.QName == name)
                 return klass;
         return null;
     }
@@ -23,13 +35,17 @@ public class ASRuntime
     {
         var file = new ABCFile(abcData);
         var classes = file.Classes
-            .Where(klass => klass.QName.Namespace.Name != IgnoredNamespace && GetClass(klass.QName) is null)
-            .Select(klass => new ASInterpretedClass(klass, this))
+            .Where(klass => klass.QName.Namespace.Name != "flash" && GetClass(klass.QName) is null)
+            .Select(klass => new ASInterpretedClass(klass,this))
             .ToArray();
         _classes.AddRange(classes);
 
-        foreach (var @class in classes)
-            @class.CallInitializer();
+        foreach (var script in file.Scripts)
+            if(script.QName.Namespace.Name != "flash")
+            {
+                var asMethod = new ASInterpretedMethod(script.Initializer, this);
+                asMethod.Invoke(null);
+            }
     }
 
     public void HotReload(byte[] abcData)
@@ -51,13 +67,16 @@ public class ASRuntime
 
     }
 
-    public void RegisterType(Type type,string @namespace = "")
+    public ASBaseClass RegisterType(Type type, string @namespace = "")
     {
-        var klass = _classes.FirstOrDefault(klass => klass.Namespace == @namespace && klass.Name == type.Name);
-        if(klass is not null)
-            _classes.Remove(klass);
-        
-        var customClass = new ASNativeClass(type,@namespace);
+        return RegisterType(type, new QName(type.Name, @namespace));
+    }
+
+    public ASBaseClass RegisterType(Type type, QName qName)
+    {
+        var baseClass = _classes.FirstOrDefault(klass => klass is ASNativeClass nativeClass && nativeClass.Type == type.BaseType);
+        var customClass = new ASNativeClass(type,qName,baseClass);
         _classes.Add(customClass);
+        return customClass;
     }
 }

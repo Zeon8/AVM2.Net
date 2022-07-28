@@ -5,19 +5,17 @@ namespace AVM2.Core;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public abstract class ASBaseClass : IASObject
 {
-    public abstract string Name { get; }
-    public abstract string Namespace { get; }
+    public abstract QName QName { get; }
     public abstract IASMethod[] Methods { get; }
     public abstract IASProperty[] Properties { get; }
+    public abstract ASBaseClass BaseClass { get; }
 
     public abstract ASObject Construct(params object[] args);
 
-    public abstract ASBaseClass BaseClass { get; }
-
     object IASObject.this[string propertyName] 
     { 
-        get => GetProperty(propertyName).GetValue(null);
-        set => GetProperty(propertyName).SetValue(null, value);
+        get => GetProperty(propertyName)?.GetValue(null);
+        set => GetProperty(propertyName)?.SetValue(null, value);
     }
 
     public abstract bool IsAssignableTo(ASBaseClass @class);
@@ -42,12 +40,9 @@ public abstract class ASBaseClass : IASObject
     {
         IASMethod method = GetMethod(name);
         if (method is null)
-            throw new Exception(Name + " has no method " + name);
+            throw new AVM2Exception(QName.Name + " has no method " + name);
         return method.Invoke(null, args);
     }
 
-    private string GetDebuggerDisplay()
-    {
-        return Name;
-    }
+    private string GetDebuggerDisplay() => QName.Name;
 }

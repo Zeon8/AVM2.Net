@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace AVM2.Core.Native;
 
-public class ASNativeProperty : IASProperty
+internal class ASNativeProperty : IASProperty
 {
 
     public string Name { get; }

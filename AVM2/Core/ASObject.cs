@@ -12,7 +12,7 @@ public class ASObject : IASObject
 
     public ASObject(){}
 
-    public ASObject(ASBaseClass @class, object instance = null)
+    internal ASObject(ASBaseClass @class, object instance = null)
     {
         Class = @class;
         NativeInstance = instance;

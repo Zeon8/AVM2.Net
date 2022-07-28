@@ -1,3 +1,5 @@
+using Flazzy.ABC;
+
 namespace AVM2.Core;
 
 internal interface IASObject

@@ -10,16 +10,15 @@ public class NativeCallTests
 {
     private ASBaseClass _class;
 
-    private ASObject _testClass = new ASNativeClass(typeof(TestClass)).Construct();
+    private ASObject _testClass;
 
     [TestInitialize]
     public void Setup()
     {
-        var runtime = ASTest.LoadRuntime((runtime) => 
-        {
-            runtime.RegisterType(typeof(TestClass));
-            runtime.RegisterType(typeof(TestClass2));
-        });
+        var runtime = ASTest.LoadRuntime();
+        var testClass = runtime.GetClass("TestClass");
+        _testClass = testClass.Construct();
+
         _class = runtime.GetClass("NativeCallTests");
     }
 

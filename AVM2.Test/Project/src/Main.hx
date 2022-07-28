@@ -4,10 +4,7 @@ class Main
 {
 	static function main()
 	{
-		trace(Test.a);
-	}
-	
-	public function listen()
-	{
+		var test: ITest = new Test();
+		test.test();
 	}
 }

@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace AVM2.Core.Native;
 
-public class ASNativeMethod : IASMethod
+internal class ASNativeMethod : IASMethod
 {
     private readonly MethodBase _method;
 

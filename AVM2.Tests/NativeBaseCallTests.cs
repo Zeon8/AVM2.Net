@@ -12,11 +12,7 @@ public class NativeBaseCallTests
     [TestInitialize]
     public void Setup()
     {
-        var runtime = ASTest.LoadRuntime(runtime => 
-        {
-            runtime.RegisterType(typeof(TestClass));
-            runtime.RegisterType(typeof(TestClass2));
-        });
+        var runtime = ASTest.LoadRuntime();
         _class = runtime.GetClass("NativeSuperCallTests");
     }
 

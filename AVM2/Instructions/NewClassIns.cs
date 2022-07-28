@@ -1,4 +1,5 @@
 ﻿using AVM2.Core;
+using AVM2.Core.Interpreted;
 using Flazzy.IO;
 
 namespace Flazzy.ABC.AVM2.Instructions
@@ -32,8 +33,11 @@ namespace Flazzy.ABC.AVM2.Instructions
         }
         public override void Execute(ASMachine machine)
         {
-            object baseType = machine.Values.Pop();
-            machine.Values.Push(null);
+            var baseType = (ASBaseClass)machine.Values.Pop();
+            var @class = machine.Runtime.GetClass(Class.QName);
+            if(@class is ASInterpretedClass interpretedClass)
+                interpretedClass.SetBaseClass(baseType);
+            machine.Values.Push(@class);
         }
 
         protected override void WriteValuesTo(FlashWriter output)

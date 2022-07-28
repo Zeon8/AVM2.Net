@@ -4,10 +4,12 @@ package ;
  * ...
  * @author Zeon4
  */
-class Test
+class Test implements ITest
 {
-	public static var a = 12;
+	public function new(){}
 	
-	public function new() {}
-	
+	public function test()
+	{
+		trace(120);
+	}
 }
