@@ -10,6 +10,8 @@ public abstract class ASBaseClass : IASObject
     public abstract IASProperty[] Properties { get; }
     public abstract ASBaseClass BaseClass { get; }
 
+    public abstract bool IsInterface { get; }
+
     public abstract ASObject Construct(params object[] args);
 
     object IASObject.this[string propertyName] 
@@ -19,6 +21,8 @@ public abstract class ASBaseClass : IASObject
     }
 
     public abstract bool IsAssignableTo(ASBaseClass @class);
+
+    public abstract ASBaseClass[] GetInterfaces();
 
     public IASMethod GetMethod(string name)
     {

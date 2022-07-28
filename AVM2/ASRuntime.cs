@@ -19,6 +19,7 @@ public class ASRuntime
         RegisterType(typeof(ASObject), new QName("Boot","flash"));
     }
 
+    public ASBaseClass GetClass(Type type) => _classes.FirstOrDefault(klass => klass is ASNativeClass nativeClass && nativeClass.Type == type);
     public ASBaseClass GetClass(string name, string @namespace = "") => GetClass(new QName(name, @namespace));
 
     public ASBaseClass GetClass(QName qName) => _classes.FirstOrDefault(klass => klass.QName == qName);
@@ -74,8 +75,7 @@ public class ASRuntime
 
     public ASBaseClass RegisterType(Type type, QName qName)
     {
-        var baseClass = _classes.FirstOrDefault(klass => klass is ASNativeClass nativeClass && nativeClass.Type == type.BaseType);
-        var customClass = new ASNativeClass(type,qName,baseClass);
+        var customClass = new ASNativeClass(type,qName,this);
         _classes.Add(customClass);
         return customClass;
     }

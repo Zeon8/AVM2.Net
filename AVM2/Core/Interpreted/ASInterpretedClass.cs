@@ -1,3 +1,4 @@
+using AVM2.Core.Native;
 using Flazzy.ABC;
 
 namespace AVM2.Core.Interpreted;
@@ -16,14 +17,17 @@ public class ASInterpretedClass : ASBaseClass
 
     public ASClass Class { get; }
 
+    public override bool IsInterface { get; }
+
     private readonly ASRuntime _runtime;
 
     public ASInterpretedClass(ASClass @class, ASRuntime runtime)
     {
         Class = @class;
         _runtime = runtime;
-        
+
         QName = new QName(@class.QName);
+        IsInterface = @class.Instance.IsInterface;
 
         Methods = Class.GetMethods()
             .Union(Class.Instance.GetMethods())
@@ -46,11 +50,33 @@ public class ASInterpretedClass : ASBaseClass
 
     public override bool IsAssignableTo(ASBaseClass @class)
     {
+        if (@class.IsInterface)
+        {
+            bool implements = @class == this || GetInterfaces().Any(@interface => @interface.IsAssignableTo(@class));
+            if(implements)
+                return true;
+        }
+        if(IsInterface)
+            return false;
+
         var super = _runtime.GetClass(Class.Instance.Super);
-        while (super is not null && super.QName != @class.QName)
-            super = _runtime.GetClass(super.BaseClass.QName);
-        return super is not null;
+        var implementsInterface = false;
+        while (super is not null && super.QName != @class.QName && !implementsInterface)
+        {
+            if(@class.IsInterface)
+                implementsInterface = super.IsAssignableTo(@class);
+            super = super.BaseClass;
+        }
+
+        return super is not null || implementsInterface;
     }
 
     internal void SetBaseClass(ASBaseClass baseClass) => _baseClass = baseClass;
+
+    public override ASBaseClass[] GetInterfaces()
+    {
+        return Class.Instance.GetInterfaces()
+            .Select(name => _runtime.GetClass(name))
+            .ToArray();
+    }
 }

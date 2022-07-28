@@ -22,7 +22,13 @@ public struct QName
 
     public static bool operator ==(QName a, QName b) => a.Equals(b);
     public static bool operator !=(QName a, QName b) => !a.Equals(b);
-    public static bool operator ==(QName a, ASMultiname b) => a.Name == b.Name && a.Namespace == b.Namespace.Name;
+    
+    public static bool operator ==(QName a, ASMultiname b)
+    {
+        var @namespace = b.Namespace?.Name ?? "";
+        return a.Name == b.Name && a.Namespace == @namespace;
+    }
+
     public static bool operator !=(QName a, ASMultiname b) => !(a == b);
 
     public override bool Equals(object obj)

@@ -4,12 +4,13 @@ package ;
  * ...
  * @author Zeon4
  */
-class Test implements ITest
+class Test extends TestParent 
 {
-	public function new(){}
-	
-	public function test()
+
+	public function new() 
 	{
-		trace(120);
+		super();
+		
 	}
+	
 }

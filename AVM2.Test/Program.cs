@@ -10,9 +10,8 @@ using Flazzy.Tags;
 var interpreter = new ASRuntime();
 interpreter.RegisterType(typeof(ASMath));
 interpreter.RegisterType(typeof(Log),"haxe");
-interpreter.RegisterType(typeof(TestParent));
 
-var swf = new ShockwaveFlash("Project/bin/library.swf");
+var swf = new ShockwaveFlash("Project/bin/Project.swf");
 swf.Disassemble();
 
 foreach (TagItem tag in swf.Tags)

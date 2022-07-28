@@ -5,6 +5,6 @@ class Main
 	static function main()
 	{
 		var test: ITest = new Test();
-		test.test();
+		trace(Std.isOfType(test, IRandomInterface));
 	}
 }
