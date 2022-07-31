@@ -45,6 +45,12 @@ public class ASInterpretedMethod : IASMethod
                 if (condition.HasValue && condition.Value == true)
                     jumperExit = asCode.JumpExits[jumper];
             }
+            if(instruction is LookUpSwitchIns lookUpSwitchIns)
+            {
+                int value = (int)machine.Values.Pop();
+                if(value > 0 || value < lookUpSwitchIns.CaseOffsets.Count)
+                    jumperExit = asCode.SwitchExits[lookUpSwitchIns][value];
+            }
             else if (instruction is ReturnValueIns)
                 return machine.Values.Pop();
 

@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace AVM2.Tests;
 
 [TestClass]
-public class IfElseTests
+public class ControlTransferTests
 {
     private ASBaseClass _class;
 
@@ -12,7 +12,7 @@ public class IfElseTests
     public void Setup()
     {
         var runtime = ASTest.LoadRuntime();
-        _class = runtime.GetClass("IfElseTests");
+        _class = runtime.GetClass("ControlTransferTests");
     }
 
     [TestMethod]
@@ -57,6 +57,16 @@ public class IfElseTests
     public void ElseIf(int num, string expected)
     {
         var result = _class.GetMethod("elseIf").Invoke(null, num);
+        Assert.AreEqual(expected,result);
+    }
+
+    [TestMethod]
+    [DataRow(1,"one")]
+    [DataRow(2,"two")]
+    [DataRow(3,"other number")]
+    public void Switch(int num, string expected)
+    {
+        var result = _class.GetMethod("switchTest").Invoke(null, num);
         Assert.AreEqual(expected,result);
     }
 

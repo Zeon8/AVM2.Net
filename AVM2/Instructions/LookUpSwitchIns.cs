@@ -37,10 +37,7 @@ namespace Flazzy.ABC.AVM2.Instructions
         {
             return 1;
         }
-        public override void Execute(ASMachine machine)
-        {
-            machine.Values.Pop();
-        }
+        public override void Execute(ASMachine machine){}
 
         protected override void WriteValuesTo(FlashWriter output)
         {

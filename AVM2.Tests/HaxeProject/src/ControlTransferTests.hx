@@ -4,7 +4,7 @@ package ;
  * ...
  * @author Zeon4
  */
-class IfElseTests 
+class ControlTransferTests
 {
 
 	public static function ifTest(value: Bool)
@@ -46,6 +46,21 @@ class IfElseTests
 			result = "two";
 		else
 			result = "other number";
+		return result;
+	}
+	
+	public static function switchTest(num: Int)
+	{
+		var result:String;
+		switch (num) 
+		{
+			case 1:
+				result = "one";
+			case 2:
+				result = "two";
+			default:
+				result = "other number";
+		}
 		return result;
 	}
 	

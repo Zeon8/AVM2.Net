@@ -2,7 +2,7 @@
 ClassTests
 ObjectsTests
 ExpressionsTests
-IfElseTests
+ControlTransferTests
 NativeCallTests
 NativeSuperCallTests 
 --swf bin/HaxeProject.swf
