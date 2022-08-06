@@ -21,22 +21,22 @@ internal class ASNativeMethod : IASMethod
     }
 
 
-    public object Invoke(ASObject thisValue, params object[] args)
+    public object Invoke(IASObject thisValue, params object[] args)
     {
-        object instance = null;
+        object nativeObject = null;
         if (thisValue is not null)
         {
-            instance = thisValue.NativeInstance;
-            while (instance is null && thisValue is not null)
-            {
-                thisValue = thisValue.Super;
-                instance = thisValue.NativeInstance;
-            }
+            ASObject obj = (ASObject)thisValue;
+            while (obj is not null && obj is not ASNativeObject)
+                obj = obj.Super;
+            
+            nativeObject = ((ASNativeObject)obj).Instance;
         }
+        
         var @params = _method.GetParameters();
         if (@params.Length == 1 && @params[0].IsDefined(typeof(ParamArrayAttribute), true))
-            return _method.Invoke(instance, new object[] { args });
+            return _method.Invoke(nativeObject, new object[] { args });
         else
-            return _method.Invoke(instance, args);
+            return _method.Invoke(nativeObject, args);
     }
 }

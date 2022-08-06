@@ -1,10 +1,9 @@
-using System.Diagnostics;
 using System.Collections;
-
-using Flazzy.IO;
-using Flazzy.ABC.AVM2.Instructions;
+using System.Diagnostics;
 using Flazzy;
 using Flazzy.ABC;
+using Flazzy.ABC.AVM2.Instructions;
+using Flazzy.IO;
 
 namespace AVM2.Core;
 
@@ -20,6 +19,9 @@ public class ASCode : FlashItem, IList<ASInstruction>
 
     public Dictionary<Jumper, ASInstruction> JumpExits { get; }
     public Dictionary<LookUpSwitchIns, ASInstruction[]> SwitchExits { get; }
+    public Dictionary<ASException, ASInstruction> FromOffsets { get; }
+    public Dictionary<ASException, ASInstruction> ToOffsets { get; }
+    public Dictionary<ASException, ASInstruction> TargetOffsets { get; }
 
     public bool IsReadOnly => false;
     public int Count => _instructions.Count;
@@ -65,6 +67,10 @@ public class ASCode : FlashItem, IList<ASInstruction>
 
         JumpExits = new Dictionary<Jumper, ASInstruction>();
         SwitchExits = new Dictionary<LookUpSwitchIns, ASInstruction[]>();
+        
+        FromOffsets = new();
+        ToOffsets = new();
+        TargetOffsets = new();
 
         LoadInstructions();
     }
@@ -652,6 +658,16 @@ public class ASCode : FlashItem, IList<ASInstruction>
                         }
                         // TODO: Check if not adding an impossible label is fine...
                     }
+                }
+                
+                foreach (var exception in _body.Exceptions)
+                {
+                    if(exception.From == previousPosition)
+                        FromOffsets.Add(exception, instruction);
+                    else if(exception.To == previousPosition)
+                        ToOffsets.Add(exception, instruction);
+                    else if(exception.Target == previousPosition)
+                        TargetOffsets.Add(exception, instruction);
                 }
             }
         }

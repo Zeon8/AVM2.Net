@@ -35,15 +35,15 @@ public class NativeCallTests
     [TestMethod]
     public void Construct_Native()
     {
-        var result = (ASObject)_class.GetMethod("construct").Invoke(null);
-        Assert.IsNotNull(result.NativeInstance);
+        var result = (ASNativeObject)_class.GetMethod("construct").Invoke(null);
+        Assert.IsNotNull(result.Instance);
     }
 
     [TestMethod]
     public void Construct_Width_Params()
     {
-        ASObject instance = (ASObject)_class.GetMethod("constructWithParams").Invoke(null, 2);
-        TestClass2 testClass = (TestClass2)instance.NativeInstance;
+        ASNativeObject instance = (ASNativeObject)_class.GetMethod("constructWithParams").Invoke(null, 2);
+        TestClass2 testClass = (TestClass2)instance.Instance;
         Assert.AreEqual(2,testClass.Number);
     }
 
@@ -55,5 +55,36 @@ public class NativeCallTests
     {
         var result = _class.GetMethod("callMethodAndWithReturn").Invoke(null,_testClass,3);
         Assert.AreEqual(3,result);
+    }
+
+    [TestMethod]
+    public void Get_Static_Property()
+    {
+        var value = _class.GetMethod("getStaticProperty").Invoke(null);
+        Assert.AreEqual(TestClass.TestStaticProperty,value);
+    }
+
+    [TestMethod]
+    public void Get_Property()
+    {
+        var testClass = new TestClass();
+        var value = _class.GetMethod("getStaticProperty").Invoke(null,testClass);
+        Assert.AreEqual(testClass.TestProperty,value);
+    }
+
+    [TestMethod]
+    public void Set_Static_Property()
+    {
+        _class.GetMethod("setStaticProperty").Invoke(null,2);
+        Assert.AreEqual(2, TestClass.TestStaticProperty);
+    }
+
+    [TestMethod]
+    public void Set_Property()
+    {
+        _class.GetMethod("setProperty").Invoke(null,_testClass,2);
+        var native = (ASNativeObject)_testClass;
+        var testClass = (TestClass)native.Instance;
+        Assert.AreEqual(2, testClass.TestProperty);
     }
 }

@@ -27,7 +27,8 @@ public class NativeBaseCallTests
     public void Construct_Width_Params()
     {
         var obj = (ASObject)_class.GetMethod("constructWithParams").Invoke(null,1);
-        var testClass = (TestClass2)obj.Super.NativeInstance;
+        var superNative = (ASNativeObject)obj.Super;
+        var testClass = (TestClass2)superNative.Instance;
         Assert.AreEqual(1, testClass.Number);
     }
 

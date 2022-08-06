@@ -29,7 +29,7 @@ namespace Flazzy.ABC.AVM2.Instructions
         {
             object[] args = GetMethodArgs(machine);
             var instance = (ASObject)machine.Values.Pop();
-            instance.Super = instance.Class.BaseClass.Construct(args);
+            instance.ConstructSuper(args);
         }
 
         protected override void WriteValuesTo(FlashWriter output)

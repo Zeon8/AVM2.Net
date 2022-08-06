@@ -14,7 +14,13 @@ namespace Flazzy.ABC.AVM2.Instructions
         }
         public override void Execute(ASMachine machine)
         {
-            object value = machine.Values.Pop();
+            var exceptionObject = (ASObject)machine.Values.Pop();
+
+            while (exceptionObject is not null && exceptionObject is not ASNativeObject)
+                exceptionObject = exceptionObject.Super;
+                
+            var nativeException = (ASNativeObject)exceptionObject;
+            throw (AVM2Exception)nativeException.Instance;
         }
     }
 }

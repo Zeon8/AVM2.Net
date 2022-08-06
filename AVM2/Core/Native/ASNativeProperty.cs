@@ -19,16 +19,18 @@ internal class ASNativeProperty : IASProperty
         Name = attribute?.CustomName ?? name;
     }
 
-    public object GetValue(ASObject obj)
+    public object GetValue(IASObject obj)
     {
+        var native = (ASNativeObject)obj;
         if (_propertyInfo.CanRead)
-            return _propertyInfo.GetValue(obj.NativeInstance);
+            return _propertyInfo.GetValue(native.Instance);
         return null;
     }
 
-    public void SetValue(ASObject obj, object value)
+    public void SetValue(IASObject obj, object value)
     {
+        var nativeObj = (ASNativeObject)obj;
         if (_propertyInfo.CanWrite)
-            _propertyInfo.SetValue(obj.NativeInstance, value);
+            _propertyInfo.SetValue(nativeObj.Instance, value);
     }
 }

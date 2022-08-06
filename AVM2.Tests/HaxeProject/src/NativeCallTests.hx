@@ -33,6 +33,27 @@ class NativeCallTests
 		return test.testWithReturn(number);
 	}
 	
+	public static function getStaticProperty() 
+	{
+		return TestClass.testStaticProperty;
+	}
+	
+	public static function setStaticProperty(value: Int) 
+	{
+		TestClass.testStaticProperty = value;
+	}
+	
+	public static function getProperty(test: TestClass) 
+	{
+		return test.testProperty;
+	}
+	
+	public static function setProperty(test: TestClass, value: Int) 
+	{
+		test.testProperty = value;
+	}
+	
+	
 	
 	
 }

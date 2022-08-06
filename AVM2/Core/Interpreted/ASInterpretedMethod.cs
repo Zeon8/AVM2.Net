@@ -20,7 +20,7 @@ public class ASInterpretedMethod : IASMethod
         _runtime = runtime;
     }
 
-    public object Invoke(ASObject thisValue, params object[] args)
+    public object Invoke(IASObject thisValue, params object[] args)
     {
         var body = _method.Body;
         var machine = new ASMachine(body.LocalCount, _runtime);
@@ -33,6 +33,7 @@ public class ASInterpretedMethod : IASMethod
     private object Execute(ASCode asCode, ASMachine machine)
     {
         ASInstruction jumperExit = null;
+        ASException expectedException = null;
         foreach (ASInstruction instruction in asCode)
         {
             if (jumperExit is not null && instruction != jumperExit)
@@ -45,7 +46,7 @@ public class ASInterpretedMethod : IASMethod
                 if (condition.HasValue && condition.Value == true)
                     jumperExit = asCode.JumpExits[jumper];
             }
-            if(instruction is LookUpSwitchIns lookUpSwitchIns)
+            else if(instruction is LookUpSwitchIns lookUpSwitchIns)
             {
                 int value = (int)machine.Values.Pop();
                 if(value > 0 || value < lookUpSwitchIns.CaseOffsets.Count)
@@ -53,13 +54,31 @@ public class ASInterpretedMethod : IASMethod
             }
             else if (instruction is ReturnValueIns)
                 return machine.Values.Pop();
+            
+            foreach (var item in asCode.FromOffsets)
+            {
+                if(instruction == item.Value)
+                    expectedException = item.Key;
+            }
 
-            instruction.Execute(machine);
+            if(expectedException is null)
+                instruction.Execute(machine);
+            else
+            {
+                try { instruction.Execute(machine); }
+                catch (AVM2Exception e)
+                {
+                    jumperExit = asCode.TargetOffsets[expectedException];
+                    var asObject = new ASNativeObject(_runtime.GetClass(typeof(AVM2Exception)), e);
+                    machine.Values.Push(asObject);
+                    expectedException = null;
+                }
+            }
         }
         return null;
     }
 
-    private static void SetupRegisters(ASObject thisValue, object[] args, ASMachine machine)
+    private static void SetupRegisters(IASObject thisValue, object[] args, ASMachine machine)
     {
         //Put "this" into register
         machine.Registers.Add(0, thisValue);

@@ -1,18 +1,22 @@
 package;
+import haxe.Exception;
 
 class Main
 {
 	static function main()
 	{
-		var a = 5;
-		switch (a) 
+		try 
 		{
-			case 5:
-				trace(1);
-			case 9:
-				trace(2);
-			default:
-				trace("other");
+			test();
 		}
+		catch (err:Exception)
+		{
+			trace(err.message);
+		}
+	}
+	
+	static function test()
+	{
+		throw new Exception("Test");
 	}
 }

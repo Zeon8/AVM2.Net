@@ -15,7 +15,7 @@ public class ASRuntime
     public ASRuntime()
     {
         RegisterType(typeof(ASObject), new QName("Object",""));
-        RegisterType(typeof(ASObject), new QName("Error",""));
+        RegisterType(typeof(AVM2Exception), new QName("Error",""));
         RegisterType(typeof(ASObject), new QName("Boot","flash"));
     }
 
@@ -59,9 +59,7 @@ public class ASRuntime
                 foreach (var method in klass.GetMethods())
                 {
                     if (interpretedClass.GetMethod(method.Trait.QName.Name) is ASInterpretedMethod interpretedMethod)
-                    {
                         interpretedMethod.ReplaceASMethod(method);
-                    }
                 }
             }
         }

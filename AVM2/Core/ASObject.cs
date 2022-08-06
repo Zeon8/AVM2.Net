@@ -2,23 +2,22 @@ namespace AVM2.Core;
 
 public class ASObject : IASObject
 {
-    public object NativeInstance { get; }
-
     public ASBaseClass Class { get; }
 
-    public ASObject Super { get; set; }
+    public ASObject Super { get; private set; }
 
     private Dictionary<string, object> _this = new();
 
     public ASObject(){}
 
-    internal ASObject(ASBaseClass @class, object instance = null)
+    internal ASObject(ASBaseClass @class) => Class = @class;
+
+    public void ConstructSuper(params object[] args)
     {
-        Class = @class;
-        NativeInstance = instance;
+        Super = Class.BaseClass.Construct(args);
     }
 
-    public object this[string propertyName]
+    public virtual object this[string propertyName]
     {
         get 
         {

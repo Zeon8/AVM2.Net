@@ -32,7 +32,7 @@ internal class ASNativeClass : ASBaseClass
 
     public override ASObject Construct(params object[] args)
     {
-        return new ASObject(this, Activator.CreateInstance(Type, args));
+        return new ASNativeObject(this, Activator.CreateInstance(Type, args));
     }
 
     public override bool IsAssignableTo(ASBaseClass @class)

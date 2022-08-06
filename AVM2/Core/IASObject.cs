@@ -2,8 +2,8 @@ using Flazzy.ABC;
 
 namespace AVM2.Core;
 
-internal interface IASObject
+public interface IASObject
 {
     object this[string propertyName] { get; set; }
-    internal object Invoke(string name, params object[] args);
+    object Invoke(string name, params object[] args);
 }

@@ -24,14 +24,14 @@ public class ASInterpretedField : IASProperty
         _testFields.Add(this);
     }
 
-    public object GetValue(ASObject obj)
+    public object GetValue(IASObject obj)
     {
         if(IsStatic)
             return _staticValue;
         return obj[Name];
     }
 
-    public void SetValue(ASObject obj, object value)
+    public void SetValue(IASObject obj, object value)
     {
         if(IsStatic)
             _staticValue = value;

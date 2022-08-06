@@ -18,13 +18,22 @@ internal class ASNativeField : IASProperty
         Name = attribute?.CustomName ?? name;
     }
 
-    public object GetValue(ASObject obj)
+    public object GetValue(IASObject obj)
     {
-        return _fieldInfo.GetValue(obj.NativeInstance);
+        if(IsStatic)
+            return _fieldInfo.GetValue(null);
+        var nativeObject = (ASNativeObject)obj;
+        return _fieldInfo.GetValue(nativeObject.Instance);
     }
 
-    public void SetValue(ASObject obj, object value)
+    public void SetValue(IASObject obj, object value)
     {
-        _fieldInfo.SetValue(obj.NativeInstance, value);
+        if(IsStatic)
+            _fieldInfo.SetValue(null, value);
+        else
+        {
+            var nativeObject = (ASNativeObject)obj;
+            _fieldInfo.SetValue(nativeObject.Instance, value);
+        }
     }
 }
