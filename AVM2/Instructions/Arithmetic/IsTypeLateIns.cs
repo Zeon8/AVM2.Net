@@ -20,7 +20,12 @@ namespace Flazzy.ABC.AVM2.Instructions
         {
             var type = (ASBaseClass)machine.Values.Pop();
             var value = (ASObject)machine.Values.Pop();
-            machine.Values.Push(value.Class.IsAssignableTo(type));
+
+            bool assignable = false;
+            if(value is not null)
+                assignable = value.Class.IsAssignableTo(type);
+                
+            machine.Values.Push(assignable);
         }
     }
 }

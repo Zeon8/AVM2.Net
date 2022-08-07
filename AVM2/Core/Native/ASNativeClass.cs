@@ -23,7 +23,7 @@ internal class ASNativeClass : ASBaseClass
     {
         QName = qName;
         Type = type;
-        Methods = Type.GetMethods().Select(method => new ASNativeMethod(method)).ToArray();
+        Methods = Type.GetMethods().Select(method => new ASNativeMethod(method,runtime)).ToArray();
         Properties = Type.GetFields().Select(field => new ASNativeField(field)).ToArray();
         Properties = Properties.Union(Type.GetProperties().Select(property => new ASNativeProperty(property))).ToArray();
         BaseClass = runtime.Classes.FirstOrDefault(klass => klass is ASNativeClass nativeClass && nativeClass.Type == type.BaseType);

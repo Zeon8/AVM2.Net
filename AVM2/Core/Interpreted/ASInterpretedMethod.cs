@@ -78,7 +78,7 @@ public class ASInterpretedMethod : IASMethod
         return null;
     }
 
-    private static void SetupRegisters(IASObject thisValue, object[] args, ASMachine machine)
+    private void SetupRegisters(IASObject thisValue, object[] args, ASMachine machine)
     {
         //Put "this" into register
         machine.Registers.Add(0, thisValue);
@@ -86,6 +86,16 @@ public class ASInterpretedMethod : IASMethod
         //Put params into regiters
         for (int i = 0; i < args.Length; i++)
             machine.Registers[i + 1] = args[i];
+
+        SetupRestParams(args, machine);
+    }
+
+    private void SetupRestParams(object[] args, ASMachine machine)
+    {
+        var parameters = _method.Parameters;
+        if (args.Length < parameters.Count)
+            for (int i = args.Length; i < parameters.Count; i++)
+                machine.Registers[i + 1] = parameters[i].Value;
     }
 
     internal void ReplaceASMethod(ASMethod method) => _method = method;

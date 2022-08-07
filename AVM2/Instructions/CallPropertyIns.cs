@@ -10,13 +10,29 @@ namespace Flazzy.ABC.AVM2.Instructions
             : base(OPCode.CallPropVoid, abc)
         { }
 
-        public CallPropertyIns(ABCFile abc, int propertyNameIndex) : base(abc, propertyNameIndex){}
-        
-        public CallPropertyIns(ABCFile abc, FlashReader input) : base(abc,input){}
+        public CallPropertyIns(ABCFile abc, FlashReader input)
+            : this(abc)
+        {
+            PropertyNameIndex = input.ReadInt30();
+            ArgCount = input.ReadInt30();
+        }
+        public CallPropertyIns(ABCFile abc, int propertyNameIndex)
+            : this(abc)
+        {
+            PropertyNameIndex = propertyNameIndex;
+        }
+        public CallPropertyIns(ABCFile abc, int propertyNameIndex, int argCount)
+            : this(abc)
+        {
+            PropertyNameIndex = propertyNameIndex;
+            ArgCount = argCount;
+        }
+
+        public CallPropertyIns(OPCode op, ABCFile abc) : base(op, abc){}
 
         public override void Execute(ASMachine machine)
         {
-            var returnValue = Call(PropertyName.Name ,machine);
+            var returnValue = Call(PropertyName.Name, machine);
             machine.Values.Push(returnValue);
         }
 

@@ -4,7 +4,8 @@ namespace AVM2.Core;
 public class AVM2Exception : Exception
 {
     public const string TypeNotFound = "Type not found : ";
+    public AVM2Exception(){ }
     public AVM2Exception(string message) : base(message) { }
 
-    public string GetStackTrace() => StackTrace;
+    public string GetStackTrace() => StackTrace ?? string.Empty;
 }

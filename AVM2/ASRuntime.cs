@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using AVM2.Core;
 using AVM2.Core.Interpreted;
 using AVM2.Core.Native;
+using AVM2.Haxe;
 using Flazzy.ABC;
 
 namespace AVM2;
@@ -15,8 +16,13 @@ public class ASRuntime
     public ASRuntime()
     {
         RegisterType(typeof(ASObject), new QName("Object",""));
-        RegisterType(typeof(AVM2Exception), new QName("Error",""));
         RegisterType(typeof(ASObject), new QName("Boot","flash"));
+
+        RegisterType(typeof(AVM2Exception), new QName("Error",""));
+        RegisterType(typeof(HaxeException), new QName("Exception","haxe"));
+        RegisterType(typeof(ValueException), "haxe");
+        RegisterType(typeof(HaxeNotImplementedException), new QName("NotImplementedException","haxe.exceptions"));
+        RegisterType(typeof(HaxeArgumentException), new QName("ArgumentException","haxe.exceptions"));
     }
 
     public ASBaseClass GetClass(Type type) => _classes.FirstOrDefault(klass => klass is ASNativeClass nativeClass && nativeClass.Type == type);

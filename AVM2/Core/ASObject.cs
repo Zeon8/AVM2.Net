@@ -32,6 +32,7 @@ public class ASObject : IASObject
 
     public object Invoke(string name, params object[] args)
     {
-        return Class.GetMethod(name)?.Invoke(this, args);
+        var method = Class.GetMethod(name);
+        return method.Invoke(this, args);
     }
 }

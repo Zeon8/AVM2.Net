@@ -28,7 +28,7 @@ public abstract class ASBaseClass : IASObject
     {
         var method = Methods.FirstOrDefault(m => m.Name == name);
         if (method is null && BaseClass is not null)
-            method = BaseClass.GetMethod(name);
+            return BaseClass.GetMethod(name);
         return method;
     }
 
@@ -36,7 +36,7 @@ public abstract class ASBaseClass : IASObject
     {
         var field = Properties.FirstOrDefault(field => field.Name == name);
         if (field is null && BaseClass is not null)
-            field = BaseClass.GetProperty(name);
+            return BaseClass.GetProperty(name);
         return field;
     }
 
