@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVM2.Test", "AVM2.Test\AVM2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVM2.Tests", "AVM2.Tests\AVM2.Tests.csproj", "{0BEBB156-236B-48CA-8E0C-3E3320B4F178}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVM2.Native", "AVM2.Native\AVM2.Native.csproj", "{91284217-C903-4D71-8D2A-7E6A6391640F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{0BEBB156-236B-48CA-8E0C-3E3320B4F178}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BEBB156-236B-48CA-8E0C-3E3320B4F178}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BEBB156-236B-48CA-8E0C-3E3320B4F178}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91284217-C903-4D71-8D2A-7E6A6391640F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91284217-C903-4D71-8D2A-7E6A6391640F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91284217-C903-4D71-8D2A-7E6A6391640F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91284217-C903-4D71-8D2A-7E6A6391640F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
