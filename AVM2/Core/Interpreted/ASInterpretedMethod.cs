@@ -36,7 +36,7 @@ public class ASInterpretedMethod : IASMethod
         foreach (var parameter in parameters)
         {
             var parameterType = parameter.GetType();
-            if(parameterType.IsPrimitive)
+            if(parameter is ASObject || parameter is object[] || parameterType.IsPrimitive)
                 wrapedParameters.Add(parameter);
             else
                 wrapedParameters.Add(new ASNativeObject(_runtime.GetClass(parameterType), parameter));
