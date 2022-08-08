@@ -35,11 +35,10 @@ public class ASInterpretedMethod : IASMethod
         var wrapedParameters = new List<object>();
         foreach (var parameter in parameters)
         {
-            var parameterType = parameter.GetType();
-            if(parameter is ASObject || parameter is object[] || parameterType.IsPrimitive)
+            if(parameter is null || parameter is ASObject || parameter is object[] || parameter.GetType().IsPrimitive)
                 wrapedParameters.Add(parameter);
             else
-                wrapedParameters.Add(new ASNativeObject(_runtime.GetClass(parameterType), parameter));
+                wrapedParameters.Add(new ASNativeObject(_runtime.GetClass(parameter.GetType()), parameter));
         }
         return wrapedParameters.ToArray();
     }

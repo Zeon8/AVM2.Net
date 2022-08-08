@@ -6,9 +6,9 @@
             : base(OPCode.Add_i)
         { }
 
-        protected override object Execute(object left, object right)
+        protected override object Execute(dynamic left, dynamic right)
         {
-            return Convert.ToInt32(left) + Convert.ToInt32(right);
+            return left + right;
         }
     }
 }

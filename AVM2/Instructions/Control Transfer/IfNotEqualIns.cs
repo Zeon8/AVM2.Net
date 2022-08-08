@@ -16,6 +16,10 @@ namespace Flazzy.ABC.AVM2.Instructions
         {
             dynamic right = machine.Values.Pop();
             dynamic left = machine.Values.Pop();
+
+            if(right is ASNativeObject nRight && left is ASNativeObject nLeft)
+                return (dynamic)nRight.Instance != (dynamic)nLeft.Instance;
+
             return left != right;
         }
     }

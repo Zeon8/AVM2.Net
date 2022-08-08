@@ -1,4 +1,6 @@
-﻿namespace Flazzy.ABC.AVM2.Instructions
+﻿using AVM2.Core;
+
+namespace Flazzy.ABC.AVM2.Instructions
 {
     public class EqualsIns : Computation
     {
@@ -6,11 +8,13 @@
             : base(OPCode.Equals)
         { }
 
-        protected override object Execute(object left, object right)
+        protected override object Execute(dynamic left, dynamic right)
         {
             if(left is null)
                 return right is null;
-            return left.Equals(right);
+            if(left is ASNativeObject nLeft && right is ASNativeObject nRight)
+                return (dynamic)nLeft.Instance == (dynamic)nRight.Instance;
+            return left == right;
         }
     }
 }

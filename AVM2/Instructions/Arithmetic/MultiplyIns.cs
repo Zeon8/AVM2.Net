@@ -6,9 +6,9 @@
             : base(OPCode.Multiply)
         { }
 
-        protected override object Execute(object left, object right)
+        protected override object Execute(dynamic left, dynamic right)
         {
-            return Convert.ToDouble(left) * Convert.ToDouble(right);
+            return left * right;
         }
     }
 }

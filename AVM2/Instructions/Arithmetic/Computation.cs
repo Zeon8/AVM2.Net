@@ -18,13 +18,13 @@ namespace Flazzy.ABC.AVM2.Instructions
         }
         public override void Execute(ASMachine machine)
         {
-            object right = machine.Values.Pop();
-            object left = machine.Values.Pop();
+            dynamic right = machine.Values.Pop();
+            dynamic left = machine.Values.Pop();
 
             object result = Execute(left, right);
             machine.Values.Push(result);
         }
-        protected abstract object Execute(object left, object right);
+        protected abstract object Execute(dynamic left, dynamic right);
 
         public static bool IsValid(OPCode op)
         {
