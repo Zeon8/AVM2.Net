@@ -47,11 +47,9 @@ internal class ASNativeMethod : IASMethod
     private object InvokeMethod(object nativeObject, object[] nativeArgs)
     {
         var result = _method.Invoke(nativeObject, nativeArgs);
-        if (result is ASObject)
-            return result;
-        else if(result is not null)
+        if(result is not object[] && result is not null && !result.GetType().IsPrimitive)
             return new ASNativeObject(_runtime.GetClass(result.GetType()), result);
-        return null;
+        return result;
     }
 
     /// Unwraps parameters, for example ASNativeObject(string) becomes string
