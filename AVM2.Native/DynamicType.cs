@@ -1,14 +1,10 @@
-using System.Diagnostics;
 using System.Reflection;
-using System.Text;
+using System.Reflection.Emit;
 using AVM2.Core;
-using AVM2.Core.Interpreted;
 using Flazzy.ABC;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 
 namespace AVM2.Native;
+
 public class DynamicType
 {
     private readonly ASClass _class;
@@ -20,67 +16,106 @@ public class DynamicType
         _wrapType = wrapType;
     }
 
-    private string Build()
+    public Type Build()
     {
-        var builder = new StringBuilder();
-        builder.Append("using AVM2.Core; ");
-        if(_wrapType.Namespace is not null && _wrapType.Namespace != string.Empty)
-            builder.AppendFormat("using {0};", _wrapType.Namespace);
-        builder.AppendFormat("public class {0} ", _class.QName.Name);
-        builder.Append(": "+_wrapType.Name+" {");
-        builder.Append("private ASObject _instance; ");
+        var name = new AssemblyName(_class.QName.Name+"_"+_wrapType.Name);
+        var asssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+        var module = asssemblyBuilder.DefineDynamicModule(name.Name);
 
-        foreach (var methodInfo in _wrapType.GetMethods(BindingFlags.Instance | BindingFlags.Public))
+        Type parentType = _wrapType.IsInterface ? typeof(object) : _wrapType;
+        var typeBuilder = module.DefineType(_class.QName.Name, TypeAttributes.Public | TypeAttributes.AutoClass | TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit, parentType);
+        if(_wrapType.IsInterface)
+            typeBuilder.AddInterfaceImplementation(_wrapType);
+
+        var fieldBuilder = typeBuilder.DefineField("_instance", typeof(ASObject), FieldAttributes.Private);
+        var invokeMethod = typeof(ASObject).GetMethod("Invoke");
+
+        foreach (var methodInfo in _wrapType.GetMethods())
         {
-            builder.Append("public ");
-            if (methodInfo.IsVirtual && !_wrapType.IsInterface)
-                builder.Append("override ");
-            string returnType = methodInfo.ReturnType.Name;
-            if(methodInfo.ReturnType == typeof(void))
-                returnType = "void";
-            builder.Append(returnType + " " + methodInfo.Name + "(");
-            GenerateParamsAndBody(builder, methodInfo);
-
-            builder.Append("} ");
+            if(methodInfo.IsPublic && methodInfo.IsVirtual)
+            {
+                MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual;
+                Type[] parameterTypes = methodInfo.GetParameters().Select(param => param.ParameterType).ToArray();
+                var methodBuilder = typeBuilder.DefineMethod(methodInfo.Name, attributes, methodInfo.ReturnType, parameterTypes);
+                GenerateIL(fieldBuilder, invokeMethod, methodInfo, methodBuilder);
+                typeBuilder.DefineMethodOverride(methodBuilder, methodInfo);
+            }
         }
-        builder.Append("} ");
-        builder.AppendFormat("return typeof({0});",_class.QName.Name);
-        return builder.ToString();
+
+        return typeBuilder.CreateType();
     }
 
-    private static void GenerateParamsAndBody(StringBuilder builder, MethodInfo methodInfo)
+    private void GenerateIL(FieldInfo runtimeField, MethodInfo runtimeInvokeMethod, MethodInfo parentMethod, MethodBuilder methodBuilder)
     {
-        string name = methodInfo.Name[0].ToString().ToLower()+methodInfo.Name[1..];
-        var statement = new StringBuilder($"_instance.Invoke(\"{name}\"");
-        var parameters = new List<string>();
-        foreach (var parameterInfo in methodInfo.GetParameters())
-        {
-            string parameter = parameterInfo.ParameterType.Name;
-            parameters.Add(parameter + " " + parameterInfo.Name);
-            statement.Append(", " + parameterInfo.Name);
-        }
-        builder.Append(string.Join(',', parameters));
-        builder.Append(")\n{ ");
-        statement.Append("); ");
+        var iLGenerator = methodBuilder.GetILGenerator();
+        iLGenerator.Emit(OpCodes.Nop);
+        iLGenerator.Emit(OpCodes.Ldarg_0);
+        iLGenerator.Emit(OpCodes.Ldfld,runtimeField);
 
-        if (methodInfo.ReturnType == typeof(void))
-            builder.Append(statement);
+        var name = methodBuilder.Name[0].ToString().ToLower() + methodBuilder.Name[1..];
+        iLGenerator.Emit(OpCodes.Ldstr, name);
+
+        ParameterInfo[] parameters = parentMethod.GetParameters();
+        if (parameters.Length > 0)
+        {
+            iLGenerator.Emit(GetIntOpCode(parameters.Length));
+            iLGenerator.Emit(OpCodes.Newarr, typeof(object));
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                iLGenerator.Emit(OpCodes.Dup);
+                iLGenerator.Emit(GetIntOpCode(i));
+                EmitArgOpCode(iLGenerator, i+1);
+                var parameterType = parameters[i].ParameterType;
+                if (parameterType.IsValueType)
+                {
+                    iLGenerator.Emit(OpCodes.Box, parameterType);
+                }
+                iLGenerator.Emit(OpCodes.Stelem_Ref);
+            }
+        }
         else
-            builder.Append('(' + methodInfo.ReturnType.FullName + ')' + statement);
+        {
+            var array = typeof(Array).GetMethod(nameof(Array.Empty)).MakeGenericMethod(typeof(object));
+            iLGenerator.Emit(OpCodes.Call, array);
+        }
+
+        iLGenerator.Emit(OpCodes.Callvirt, runtimeInvokeMethod);
+        iLGenerator.Emit(OpCodes.Pop);
+        iLGenerator.Emit(OpCodes.Ret);
     }
 
-    public Type Compile()
+    private void EmitArgOpCode(ILGenerator iLGenerator, int i)
     {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        var code = Build();
-        stopwatch.Stop();
-        Console.WriteLine(stopwatch.Elapsed);
-        
-        var options = ScriptOptions.Default.AddReferences(AppDomain.CurrentDomain.GetAssemblies());
-        stopwatch.Restart();
-        var type = (Type)CSharpScript.RunAsync(code, options).Result.ReturnValue;
-        
-        return type;
+        switch (i)
+        {
+            case 1:
+                iLGenerator.Emit(OpCodes.Ldarg_1);
+                break;
+            case 2:
+                iLGenerator.Emit(OpCodes.Ldarg_2);
+                break;
+            case 3:
+                iLGenerator.Emit(OpCodes.Ldarg_3);
+                break;
+            default:
+                iLGenerator.Emit(OpCodes.Ldarg_S, i);
+                break;
+        }
+    }
+
+    private OpCode GetIntOpCode(int number)
+    {
+        return number switch
+        {
+            0 => OpCodes.Ldc_I4_0,
+            1 => OpCodes.Ldc_I4_1,
+            2 => OpCodes.Ldc_I4_3,
+            3 => OpCodes.Ldc_I4_4,
+            4 => OpCodes.Ldc_I4_5,
+            5 => OpCodes.Ldc_I4_6,
+            7 => OpCodes.Ldc_I4_7,
+            8 => OpCodes.Ldc_I4_8,
+            _ => OpCodes.Ldc_I4_0,
+        };
     }
 }
